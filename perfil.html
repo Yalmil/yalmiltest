@@ -3,72 +3,684 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Perfil de Usuario</title>
+  <title>Perfil de Usuario | Yalmil.com</title>
+  
+  <!-- Favicon y metadatos -->
+  <link rel="icon" href="https://cdn.discordapp.com/emojis/1416607460201857168.png?v=1" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Perfil de Usuario - Yalmil.com" />
+  <meta property="og:description" content="Gestiona tu perfil y personaliza tu cuenta" />
+  <meta property="og:image" content="https://cdn.discordapp.com/attachments/1355008732576088204/1402309070014124102/Screenshot_20250804-221210.png" />
+  <meta property="og:url" content="https://yalmil.pages.dev/perfil" />
+  <meta property="og:type" content="website" />
+
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #5b21b6;
+      --primary-light: #8b5cf6;
+      --secondary: #c4b5fd;
+      --background: #0f0a1a;
+      --surface: #1e1836;
+      --surface-light: #2d2749;
+      --text: #f5f3ff;
+      --text-secondary: #c4b5fd;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border: #4c1d95;
+      --shadow: rgba(124, 58, 237, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #1f1f2e, #3b1d00);
-      color: white;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--surface), var(--surface-light));
+      border-bottom: 2px solid var(--border);
+      padding: 1.5rem 1rem;
       text-align: center;
-      padding: 40px;
+      position: relative;
+      overflow: hidden;
     }
-    .perfil-container {
-      background: #2e2e40;
-      padding: 20px;
-      border-radius: 15px;
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .header-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Contenedor principal */
+    .container {
+      width: 100%;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tarjeta de perfil */
+    .profile-card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      border: 2px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    }
+
+    /* Sección de avatar */
+    .avatar-section {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .avatar-container {
+      position: relative;
       display: inline-block;
-      box-shadow: 0 0 20px rgba(255, 102, 0, 0.6);
+      margin-bottom: 1rem;
     }
-    .perfil-avatar {
-      width: 120px;
-      height: 120px;
+
+    .profile-avatar {
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid #ff6600;
-      box-shadow: 0 0 15px #ff6600;
-    }
-    input, button {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 80%;
-      max-width: 300px;
-      border: none;
-      border-radius: 5px;
-    }
-    input {
-      background: #1a1a1a;
-      color: white;
-      border: 1px solid #ff6600;
-      box-shadow: 0 0 5px #ff6600;
-    }
-    button {
-      background: #ff6600;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 10px #ff6600;
+      border: 4px solid var(--primary);
+      box-shadow: 0 0 25px var(--shadow);
       transition: all 0.3s ease;
     }
-    button:hover {
-      background: #ff8533;
-      box-shadow: 0 0 15px #ff8533;
+
+    .profile-avatar:hover {
+      transform: scale(1.05);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 35px var(--shadow);
+    }
+
+    .avatar-edit-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: var(--primary);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+
+    .avatar-edit-btn:hover {
+      background: var(--primary-light);
+      transform: scale(1.1);
+    }
+
+    .user-name {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .user-email {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .user-id {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      background: var(--surface-light);
+      padding: 0.3rem 0.8rem;
+      border-radius: 12px;
+      display: inline-block;
+      border: 1px solid var(--border);
+    }
+
+    /* Sección de formulario */
+    .form-section {
+      background: var(--surface-light);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .form-section h3 {
+      font-size: 1.4rem;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-section h3 i {
+      color: var(--primary);
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .input-label {
+      display: block;
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-label i {
+      color: var(--primary);
+      width: 20px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 2.8rem;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 3.1rem;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .input-hint {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      margin-left: 0.2rem;
+      line-height: 1.4;
+    }
+
+    /* Botones */
+    .buttons-container {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-light);
+      border-color: var(--primary);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #f87171);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Sección de información adicional */
+    .info-section {
+      background: var(--surface);
+      border-radius: 15px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--surface-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.2rem;
+      border: 1px solid var(--border);
+    }
+
+    .info-text h4 {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.2rem;
+    }
+
+    .info-text p {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Mensajes de estado */
+    .status-message {
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.5s ease;
+      display: none;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .status-success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--success);
+      color: #10b981;
+    }
+
+    .status-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--danger);
+      color: #ef4444;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--surface);
+      border-top: 2px solid var(--border);
+      padding: 2rem 1rem;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-link:hover {
+      color: var(--primary-light);
+    }
+
+    .copyright {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .profile-card {
+        padding: 1.5rem;
+      }
+      
+      .profile-avatar {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .buttons-container {
+        flex-direction: column;
+      }
+      
+      .btn {
+        min-width: 100%;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-links {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .form-section {
+        padding: 1.5rem;
+      }
+      
+      .user-name {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Animación de carga */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="perfil-container">
-    <h2>Tu Perfil</h2>
-    <img id="avatar" class="perfil-avatar" src="https://via.placeholder.com/120" alt="Avatar">
-    <input type="text" id="username" placeholder="Nuevo nombre de usuario" />
-    <input type="text" id="photoURL" placeholder="URL de nueva foto de perfil" />
-    <button onclick="guardarCambios()">Guardar Cambios</button>
-    <p id="correo"></p>
+  <header>
+    <h1>
+      <i class="fas fa-user-circle"></i>
+      Perfil de Usuario
+    </h1>
+    <p class="header-subtitle">Gestiona tu información personal y personaliza tu cuenta</p>
+  </header>
+
+  <div class="container">
+    <!-- Mensajes de estado -->
+    <div id="statusMessage" class="status-message">
+      <i class="fas fa-info-circle"></i>
+      <span id="statusText"></span>
+    </div>
+
+    <!-- Tarjeta principal de perfil -->
+    <div class="profile-card">
+      <!-- Sección del avatar -->
+      <div class="avatar-section">
+        <div class="avatar-container">
+          <img id="avatar" class="profile-avatar" src="https://via.placeholder.com/150" alt="Avatar del usuario">
+          <button class="avatar-edit-btn" onclick="document.getElementById('photoURL').focus()">
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+        </div>
+        
+        <h2 id="displayName" class="user-name">Cargando...</h2>
+        <p id="userEmail" class="user-email">Cargando correo...</p>
+        <span id="userId" class="user-id">ID: Cargando...</span>
+      </div>
+
+      <!-- Formulario de edición -->
+      <div class="form-section">
+        <h3><i class="fas fa-edit"></i> Editar Información</h3>
+        
+        <div class="input-group">
+          <label class="input-label">
+            <i class="fas fa-user"></i>
+            Nombre de Usuario
+          </label>
+          <div style="position: relative;">
+            <input type="text" id="username" class="form-input" placeholder="Ingresa tu nuevo nombre de usuario">
+            <span class="input-icon"><i class="fas fa-user"></i></span>
+          </div>
+          <p class="input-hint">Este nombre será visible para otros usuarios</p>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">
+            <i class="fas fa-image"></i>
+            URL de Foto de Perfil
+          </label>
+          <div style="position: relative;">
+            <input type="text" id="photoURL" class="form-input" placeholder="https://ejemplo.com/foto.jpg">
+            <span class="input-icon"><i class="fas fa-link"></i></span>
+          </div>
+          <p class="input-hint">Usa una imagen cuadrada para mejores resultados</p>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="buttons-container">
+          <button class="btn btn-primary" onclick="guardarCambios()" id="saveBtn">
+            <i class="fas fa-save"></i>
+            <span id="saveText">Guardar Cambios</span>
+          </button>
+          
+          <button class="btn btn-secondary" onclick="restaurarOriginal()">
+            <i class="fas fa-undo"></i>
+            Restaurar Original
+          </button>
+          
+          <button class="btn btn-secondary" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i>
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
+
+      <!-- Información adicional -->
+      <div class="info-section">
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="info-text">
+              <h4>Última actualización</h4>
+              <p id="lastUpdate">Hoy</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="info-text">
+              <h4>Estado de la cuenta</h4>
+              <p id="accountStatus">Verificada</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="info-text">
+              <h4>Miembro desde</h4>
+              <p id="memberSince">Cargando...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="https://yalmil.pages.dev/juegos" class="footer-link">
+          <i class="fas fa-gamepad"></i> Juegos
+        </a>
+        <a href="https://yalmil.pages.dev/jugador" class="footer-link">
+          <i class="fas fa-user"></i> Solitarios
+        </a>
+        <a href="https://yalmil.pages.dev/juegos/multijugador" class="footer-link">
+          <i class="fas fa-users"></i> Multijugador
+        </a>
+        <a href="https://yalmil.pages.dev/changelog" class="footer-link">
+          <i class="fas fa-history"></i> Changelog
+        </a>
+      </div>
+      <div class="copyright">
+        <i class="fas fa-code"></i> Desarrollado con <i class="fas fa-heart" style="color: #ef4444;"></i> por Yalmil.com &copy; 2025
+      </div>
+    </div>
+  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      updateProfile, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZoRcoeC3MFMPYJWgl4dmNjq-U51dKD5o",
@@ -81,35 +693,153 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    let originalUserData = {};
 
+    // Mostrar mensaje de estado
+    function showStatus(message, type = 'success') {
+      const statusEl = document.getElementById('statusMessage');
+      const textEl = document.getElementById('statusText');
+      
+      statusEl.className = `status-message status-${type}`;
+      textEl.textContent = message;
+      statusEl.style.display = 'flex';
+      
+      setTimeout(() => {
+        statusEl.style.display = 'none';
+      }, 5000);
+    }
+
+    // Formatear fecha
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    // Cargar datos del usuario
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        document.getElementById("avatar").src = user.photoURL || "https://via.placeholder.com/120";
-        document.getElementById("username").value = user.displayName || "";
-        document.getElementById("photoURL").value = user.photoURL || "";
-        document.getElementById("correo").innerText = "Correo: " + user.email;
+        // Guardar datos originales
+        originalUserData = {
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+          email: user.email,
+          uid: user.uid
+        };
+
+        // Actualizar UI
+        document.getElementById('avatar').src = user.photoURL || "https://via.placeholder.com/150";
+        document.getElementById('username').value = user.displayName || "";
+        document.getElementById('photoURL').value = user.photoURL || "";
+        document.getElementById('displayName').textContent = user.displayName || "Usuario sin nombre";
+        document.getElementById('userEmail').textContent = user.email || "Sin correo";
+        document.getElementById('userId').textContent = `ID: ${user.uid.substring(0, 12)}...`;
+        
+        // Información adicional
+        document.getElementById('lastUpdate').textContent = formatDate(user.metadata.lastSignInTime);
+        document.getElementById('memberSince').textContent = formatDate(user.metadata.creationTime);
+        document.getElementById('accountStatus').textContent = user.emailVerified ? "Verificada" : "No verificada";
+        
       } else {
-        window.location.href = "login.html"; // Redirige si no está logueado
+        window.location.href = "login.html";
       }
     });
 
-    window.guardarCambios = function () {
+    // Guardar cambios
+    window.guardarCambios = async function () {
       const user = auth.currentUser;
-      if (user) {
-        const nuevoNombre = document.getElementById("username").value;
-        const nuevaFoto = document.getElementById("photoURL").value;
+      if (!user) return;
 
-        updateProfile(user, {
-          displayName: nuevoNombre,
-          photoURL: nuevaFoto
-        }).then(() => {
-          alert("Cambios guardados correctamente.");
-          location.reload();
-        }).catch((error) => {
-          alert("Error al guardar: " + error.message);
-        });
+      const nuevoNombre = document.getElementById('username').value.trim();
+      const nuevaFoto = document.getElementById('photoURL').value.trim();
+
+      if (!nuevoNombre) {
+        showStatus('Por favor, ingresa un nombre de usuario', 'error');
+        return;
       }
-    }
+
+      // Mostrar estado de carga
+      const saveBtn = document.getElementById('saveBtn');
+      const saveText = document.getElementById('saveText');
+      saveBtn.disabled = true;
+      saveText.innerHTML = '<span class="loading"></span> Guardando...';
+
+      try {
+        await updateProfile(user, {
+          displayName: nuevoNombre,
+          photoURL: nuevaFoto || null
+        });
+
+        showStatus('¡Cambios guardados correctamente!');
+        
+        // Actualizar UI
+        document.getElementById('avatar').src = nuevaFoto || "https://via.placeholder.com/150";
+        document.getElementById('displayName').textContent = nuevoNombre;
+        document.getElementById('lastUpdate').textContent = "Justo ahora";
+        
+        // Actualizar datos originales
+        originalUserData.displayName = nuevoNombre;
+        originalUserData.photoURL = nuevaFoto || '';
+        
+      } catch (error) {
+        console.error('Error al guardar:', error);
+        showStatus('Error al guardar cambios: ' + error.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveText.textContent = 'Guardar Cambios';
+      }
+    };
+
+    // Restaurar valores originales
+    window.restaurarOriginal = function () {
+      if (confirm('¿Restaurar los valores originales?')) {
+        document.getElementById('username').value = originalUserData.displayName;
+        document.getElementById('photoURL').value = originalUserData.photoURL;
+        showStatus('Valores restaurados a la configuración original');
+      }
+    };
+
+    // Cerrar sesión
+    window.cerrarSesion = async function () {
+      if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+        try {
+          await signOut(auth);
+          window.location.href = "login.html";
+        } catch (error) {
+          showStatus('Error al cerrar sesión: ' + error.message, 'error');
+        }
+      }
+    };
+
+    // Previsualización de imagen al escribir URL
+    document.getElementById('photoURL').addEventListener('input', function(e) {
+      const url = e.target.value.trim();
+      if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+        const avatar = document.getElementById('avatar');
+        avatar.src = url;
+      }
+    });
+
+    // Validación de nombre de usuario
+    document.getElementById('username').addEventListener('input', function(e) {
+      const name = e.target.value;
+      if (name.length > 30) {
+        e.target.value = name.substring(0, 30);
+        showStatus('El nombre de usuario no puede exceder los 30 caracteres', 'error');
+      }
+    });
+
+    // Efecto de carga inicial
+    window.addEventListener('load', () => {
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.3s ease';
+      
+      setTimeout(() => {
+        document.body.style.opacity = '1';
+      }, 100);
+    });
   </script>
 </body>
 </html>
