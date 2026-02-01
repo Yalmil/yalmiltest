@@ -1,1 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bienvenida | Yalmil.com</title>
+  
+  <!-- Favicon y metadatos -->
+  <link rel="icon" href="https://cdn.discordapp.com/emojis/1416607460201857168.png?v=1" type="image/png">
+  <meta property="og:title" content="Yalmil.com" />
+  <meta property="og:description" content="Página de bienvenida personalizada para usuarios autenticados" />
+  <meta property="og:image" content="https://cdn.discordapp.com/attachments/1355008732576088204/1402309070014124102/Screenshot_20250804-221210.png?ex=68937197&is=68922017&hm=1fa6f462304b2b8cf8a0875053730f988d725d114fbf2648fcb87ee1b67b6a76&" />
+  <meta property="og:url" content="https://yalmil.github.io/Yalmil.com/" />
+  <meta property="og:type" content="website" />
 
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: .4s;
+    }
+    
+    @keyframes f {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @media(prefers-color-scheme:dark) {
+      body {
+        background: linear-gradient(135deg, #0a0a0a, #1a001f);
+        color: #e5ccff;
+      }
+      
+      header, footer {
+        background: #15001f;
+        color: #c084fc;
+      }
+      
+      header {
+        border-bottom: 2px solid #c084fc;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: #c084fc;
+      }
+      
+      main h2 {
+        color: #c084fc;
+      }
+      
+      .subpage {
+        background: rgba(40, 0, 60, .25);
+        border: 2px solid #c084fc;
+        color: #e5ccff;
+      }
+    }
+    
+    @media(prefers-color-scheme:light) {
+      body {
+        background: linear-gradient(135deg, #330a00, #662000);
+        color: #ffd8a6;
+      }
+      
+      header, footer {
+        background: #4d1a00;
+        color: #ff8c00;
+      }
+      
+      header {
+        border-bottom: 2px solid #ff8c00;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: #ff8c00;
+      }
+      
+      main h2 {
+        color: #ff8c00;
+      }
+      
+      .subpage {
+        background: rgba(60, 20, 0, .2);
+        border: 2px solid #ff8c00;
+        color: #ffd8a6;
+      }
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .loading {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="loading">
+      <h1 id="welcomeMessage">Verificando usuario...</h1>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZoRcoeC3MFMPYJWgl4dmNjq-U51dKD5o",
+      authDomain: "databaseloginweb.firebaseapp.com",
+      projectId: "databaseloginweb",
+      storageBucket: "databaseloginweb.appspot.com",
+      messagingSenderId: "121538864529",
+      appId: "1:121538864529:web:e92aaeaa4ba52618162630"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Usuario autenticado
+        const username = user.displayName || user.email || "Usuario";
+        document.getElementById('welcomeMessage').textContent = `Hello, ${username}`;
+      } else {
+        // No autenticado - redirigir a login
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>
