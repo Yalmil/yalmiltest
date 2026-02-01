@@ -12,7 +12,6 @@
   <meta property="og:image" content="https://cdn.discordapp.com/attachments/1355008732576088204/1402309070014124102/Screenshot_20250804-221210.png?ex=68937197&is=68922017&hm=1fa6f462304b2b8cf8a0875053730f988d725d114fbf2648fcb87ee1b67b6a76&" />
   <meta property="og:url" content="https://yalmil.github.io/Yalmil.com/" />
   <meta property="og:type" content="website" />
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
     
@@ -69,6 +68,28 @@
         border: 2px solid #c084fc;
         color: #e5ccff;
       }
+
+      .btn {
+        background: rgba(40, 0, 60, .4);
+        border: 2px solid #c084fc;
+        color: #e5ccff;
+      }
+
+      .btn:hover {
+        background: rgba(192, 132, 252, 0.2);
+        border-color: #e9d5ff;
+      }
+
+      input {
+        background: rgba(40, 0, 60, .3);
+        border: 2px solid #c084fc;
+        color: #e5ccff;
+      }
+
+      input::placeholder {
+        color: #c084fc;
+        opacity: 0.6;
+      }
     }
     
     @media(prefers-color-scheme:light) {
@@ -100,6 +121,28 @@
         border: 2px solid #ff8c00;
         color: #ffd8a6;
       }
+
+      .btn {
+        background: rgba(60, 20, 0, .3);
+        border: 2px solid #ff8c00;
+        color: #ffd8a6;
+      }
+
+      .btn:hover {
+        background: rgba(255, 140, 0, 0.2);
+        border-color: #ffa500;
+      }
+
+      input {
+        background: rgba(60, 20, 0, .2);
+        border: 2px solid #ff8c00;
+        color: #ffd8a6;
+      }
+
+      input::placeholder {
+        color: #ff8c00;
+        opacity: 0.6;
+      }
     }
 
     main {
@@ -113,12 +156,115 @@
     .loading {
       text-align: center;
     }
+
+    .container {
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      animation: f 0.6s ease-out;
+    }
+
+    .welcome-title {
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .btn {
+      padding: 1.2rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .join-section {
+      display: none;
+      margin-top: 1rem;
+      animation: f 0.4s ease-out;
+    }
+
+    input {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    input:focus {
+      outline: none;
+      opacity: 1;
+    }
+
+    .join-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .join-buttons .btn {
+      flex: 1;
+    }
+
+    @media (max-width: 600px) {
+      .welcome-title {
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+      }
+
+      .join-buttons {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
-    <div class="loading">
-      <h1 id="welcomeMessage">Verificando usuario...</h1>
+    <div id="loadingScreen" class="loading">
+      <h1>Verificando usuario...</h1>
+    </div>
+
+    <div id="mainContent" class="container" style="display: none;">
+      <h1 class="welcome-title">Bienvenido, <span id="username"></span></h1>
+      
+      <div class="buttons-container">
+        <button class="btn" onclick="crearSala()">Crear Sala</button>
+        
+        <button class="btn" onclick="mostrarUnirse()">Unirse a una Sala</button>
+        
+        <div id="joinSection" class="join-section">
+          <input 
+            type="text" 
+            id="roomId" 
+            placeholder="Ingresa el ID de la sala"
+            maxlength="20"
+          />
+          <div class="join-buttons">
+            <button class="btn" onclick="unirseASala()">Unirse</button>
+            <button class="btn" onclick="ocultarUnirse()">Cancelar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -145,10 +291,58 @@
       if (user) {
         // Usuario autenticado
         const username = user.displayName || user.email || "Usuario";
-        document.getElementById('welcomeMessage').textContent = `Hello, ${username}`;
+        document.getElementById('username').textContent = username;
+        
+        // Ocultar loading y mostrar contenido
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
       } else {
         // No autenticado - redirigir a login
         window.location.href = "login.html";
+      }
+    });
+
+    // Funciones globales
+    window.mostrarUnirse = function() {
+      document.getElementById('joinSection').style.display = 'block';
+      document.getElementById('roomId').focus();
+    }
+
+    window.ocultarUnirse = function() {
+      document.getElementById('joinSection').style.display = 'none';
+      document.getElementById('roomId').value = '';
+    }
+
+    window.crearSala = function() {
+      // Generar ID aleatorio para la sala
+      const roomId = Math.random().toString(36).substring(2, 10).toUpperCase();
+      alert(`Sala creada con ID: ${roomId}\n\nComparte este ID con otros jugadores para que se unan.`);
+      // Aquí puedes redirigir a la sala o hacer lo que necesites
+      console.log('Crear sala con ID:', roomId);
+    }
+
+    window.unirseASala = function() {
+      const roomId = document.getElementById('roomId').value.trim();
+      
+      if (!roomId) {
+        alert('Por favor, ingresa un ID de sala válido');
+        return;
+      }
+      
+      alert(`Uniéndose a la sala: ${roomId}`);
+      // Aquí puedes redirigir a la sala o hacer lo que necesites
+      console.log('Unirse a sala:', roomId);
+    }
+
+    // Enter para unirse
+    document.addEventListener('DOMContentLoaded', () => {
+      const roomIdInput = document.getElementById('roomId');
+      if (roomIdInput) {
+        roomIdInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            window.unirseASala();
+          }
+        });
       }
     });
   </script>
