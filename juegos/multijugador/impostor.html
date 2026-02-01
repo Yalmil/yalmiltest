@@ -80,6 +80,11 @@
         border-color: #e9d5ff;
       }
 
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       input {
         background: rgba(40, 0, 60, .3);
         border: 2px solid #c084fc;
@@ -131,6 +136,11 @@
       .btn:hover {
         background: rgba(255, 140, 0, 0.2);
         border-color: #ffa500;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
 
       input {
@@ -185,11 +195,11 @@
       font-family: 'Poppins', sans-serif;
     }
 
-    .btn:hover {
+    .btn:hover:not(:disabled) {
       transform: translateY(-2px);
     }
 
-    .btn:active {
+    .btn:active:not(:disabled) {
       transform: translateY(0);
     }
 
@@ -222,6 +232,21 @@
       flex: 1;
     }
 
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     @media (max-width: 600px) {
       .welcome-title {
         font-size: 1.5rem;
@@ -248,7 +273,7 @@
       <h1 class="welcome-title">Bienvenido, <span id="username"></span></h1>
       
       <div class="buttons-container">
-        <button class="btn" onclick="crearSala()">Crear Sala</button>
+        <button class="btn" onclick="crearSala()" id="btnCrearSala">Crear Sala</button>
         
         <button class="btn" onclick="mostrarUnirse()">Unirse a una Sala</button>
         
@@ -260,7 +285,7 @@
             maxlength="20"
           />
           <div class="join-buttons">
-            <button class="btn" onclick="unirseASala()">Unirse</button>
+            <button class="btn" onclick="unirseASala()" id="btnUnirse">Unirse</button>
             <button class="btn" onclick="ocultarUnirse()">Cancelar</button>
           </div>
         </div>
@@ -274,10 +299,19 @@
       getAuth, 
       onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      get,
+      update,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZoRcoeC3MFMPYJWgl4dmNjq-U51dKD5o",
       authDomain: "databaseloginweb.firebaseapp.com",
+      databaseURL: "https://databaseloginweb-default-rtdb.firebaseio.com",
       projectId: "databaseloginweb",
       storageBucket: "databaseloginweb.appspot.com",
       messagingSenderId: "121538864529",
@@ -286,10 +320,13 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUser = null;
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Usuario autenticado
+        currentUser = user;
         const username = user.displayName || user.email || "Usuario";
         document.getElementById('username').textContent = username;
         
@@ -297,7 +334,6 @@
         document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
       } else {
-        // No autenticado - redirigir a login
         window.location.href = "login.html";
       }
     });
@@ -313,25 +349,120 @@
       document.getElementById('roomId').value = '';
     }
 
-    window.crearSala = function() {
-      // Generar ID aleatorio para la sala
-      const roomId = Math.random().toString(36).substring(2, 10).toUpperCase();
-      alert(`Sala creada con ID: ${roomId}\n\nComparte este ID con otros jugadores para que se unan.`);
-      // Aquí puedes redirigir a la sala o hacer lo que necesites
-      console.log('Crear sala con ID:', roomId);
+    window.crearSala = async function() {
+      if (!currentUser) {
+        alert('Debes iniciar sesión para crear una sala');
+        return;
+      }
+
+      const btnCrear = document.getElementById('btnCrearSala');
+      btnCrear.disabled = true;
+      btnCrear.innerHTML = '<span class="spinner"></span>Creando sala...';
+
+      try {
+        // Generar ID aleatorio para la sala
+        const roomId = Math.random().toString(36).substring(2, 10).toUpperCase();
+        
+        // Crear objeto de usuario
+        const userData = {
+          uid: currentUser.uid,
+          displayName: currentUser.displayName || currentUser.email || "Usuario",
+          email: currentUser.email,
+          photoURL: currentUser.photoURL || "",
+          joinedAt: serverTimestamp()
+        };
+
+        // Crear la sala en la base de datos
+        const salaRef = ref(db, `salas/${roomId}`);
+        await set(salaRef, {
+          id: roomId,
+          createdAt: serverTimestamp(),
+          createdBy: currentUser.uid,
+          users: {
+            [currentUser.uid]: userData
+          }
+        });
+
+        alert(`✅ Sala creada con éxito!\n\nID: ${roomId}\n\nComparte este ID con otros jugadores para que se unan.`);
+        console.log('Sala creada con ID:', roomId);
+        
+        // Opcional: redirigir a la sala
+        // window.location.href = `sala.html?id=${roomId}`;
+        
+      } catch (error) {
+        console.error('Error al crear sala:', error);
+        alert('❌ Error al crear la sala: ' + error.message);
+      } finally {
+        btnCrear.disabled = false;
+        btnCrear.textContent = 'Crear Sala';
+      }
     }
 
-    window.unirseASala = function() {
-      const roomId = document.getElementById('roomId').value.trim();
+    window.unirseASala = async function() {
+      const roomId = document.getElementById('roomId').value.trim().toUpperCase();
       
       if (!roomId) {
         alert('Por favor, ingresa un ID de sala válido');
         return;
       }
-      
-      alert(`Uniéndose a la sala: ${roomId}`);
-      // Aquí puedes redirigir a la sala o hacer lo que necesites
-      console.log('Unirse a sala:', roomId);
+
+      if (!currentUser) {
+        alert('Debes iniciar sesión para unirte a una sala');
+        return;
+      }
+
+      const btnUnirse = document.getElementById('btnUnirse');
+      btnUnirse.disabled = true;
+      btnUnirse.innerHTML = '<span class="spinner"></span>Verificando...';
+
+      try {
+        // Verificar si la sala existe
+        const salaRef = ref(db, `salas/${roomId}`);
+        const snapshot = await get(salaRef);
+
+        if (!snapshot.exists()) {
+          alert('❌ La sala no existe. Verifica el ID e intenta nuevamente.');
+          return;
+        }
+
+        // Verificar si el usuario ya está en la sala
+        const salaData = snapshot.val();
+        if (salaData.users && salaData.users[currentUser.uid]) {
+          alert('ℹ️ Ya estás en esta sala.');
+          // Opcional: redirigir a la sala de todos modos
+          // window.location.href = `sala.html?id=${roomId}`;
+          return;
+        }
+
+        // Agregar el usuario a la sala
+        const userData = {
+          uid: currentUser.uid,
+          displayName: currentUser.displayName || currentUser.email || "Usuario",
+          email: currentUser.email,
+          photoURL: currentUser.photoURL || "",
+          joinedAt: serverTimestamp()
+        };
+
+        const userRef = ref(db, `salas/${roomId}/users/${currentUser.uid}`);
+        await set(userRef, userData);
+
+        alert(`✅ Te has unido exitosamente a la sala: ${roomId}`);
+        console.log('Unido a sala:', roomId);
+        
+        // Opcional: redirigir a la sala
+        // window.location.href = `sala.html?id=${roomId}`;
+        
+        // Limpiar el input
+        document.getElementById('roomId').value = '';
+        window.ocultarUnirse();
+        
+      } catch (error) {
+        console.error('Error al unirse a la sala:', error);
+        alert('❌ Error al unirse a la sala: ' + error.message);
+      } finally {
+        btnUnirse.disabled = false;
+        btnUnirse.textContent = 'Unirse';
+      }
     }
 
     // Enter para unirse
