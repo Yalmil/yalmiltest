@@ -85,6 +85,17 @@
         cursor: not-allowed;
       }
 
+      .btn-danger {
+        background: rgba(139, 0, 0, .4);
+        border: 2px solid #ff6b6b;
+        color: #ffcccc;
+      }
+
+      .btn-danger:hover {
+        background: rgba(255, 107, 107, 0.2);
+        border-color: #ff8787;
+      }
+
       input {
         background: rgba(40, 0, 60, .3);
         border: 2px solid #c084fc;
@@ -94,6 +105,27 @@
       input::placeholder {
         color: #c084fc;
         opacity: 0.6;
+      }
+
+      .player-card {
+        background: rgba(40, 0, 60, .3);
+        border: 2px solid #c084fc;
+      }
+
+      .player-card:hover {
+        border-color: #e9d5ff;
+        background: rgba(40, 0, 60, .4);
+      }
+
+      .room-header {
+        background: rgba(40, 0, 60, .25);
+        border: 2px solid #c084fc;
+      }
+
+      .room-id {
+        background: rgba(192, 132, 252, 0.2);
+        color: #e9d5ff;
+        border: 1px solid #c084fc;
       }
     }
     
@@ -143,6 +175,17 @@
         cursor: not-allowed;
       }
 
+      .btn-danger {
+        background: rgba(139, 0, 0, .3);
+        border: 2px solid #ff6b6b;
+        color: #ffcccc;
+      }
+
+      .btn-danger:hover {
+        background: rgba(255, 107, 107, 0.2);
+        border-color: #ff8787;
+      }
+
       input {
         background: rgba(60, 20, 0, .2);
         border: 2px solid #ff8c00;
@@ -152,6 +195,27 @@
       input::placeholder {
         color: #ff8c00;
         opacity: 0.6;
+      }
+
+      .player-card {
+        background: rgba(60, 20, 0, .2);
+        border: 2px solid #ff8c00;
+      }
+
+      .player-card:hover {
+        border-color: #ffa500;
+        background: rgba(60, 20, 0, .3);
+      }
+
+      .room-header {
+        background: rgba(60, 20, 0, .2);
+        border: 2px solid #ff8c00;
+      }
+
+      .room-id {
+        background: rgba(255, 140, 0, 0.2);
+        color: #ffa500;
+        border: 1px solid #ff8c00;
       }
     }
 
@@ -247,8 +311,98 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Estilos para la sala */
+    .room-container {
+      max-width: 800px;
+      width: 100%;
+      animation: f 0.6s ease-out;
+    }
+
+    .room-header {
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .room-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .room-id {
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .room-info {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+
+    .players-section {
+      margin-bottom: 2rem;
+    }
+
+    .players-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .player-card {
+      padding: 1.5rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .player-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid currentColor;
+    }
+
+    .player-name {
+      font-weight: 600;
+      font-size: 1rem;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .player-badge {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 12px;
+      opacity: 0.8;
+    }
+
+    .leave-room-btn {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
     @media (max-width: 600px) {
-      .welcome-title {
+      .welcome-title, .room-title {
         font-size: 1.5rem;
       }
 
@@ -260,6 +414,14 @@
       .join-buttons {
         flex-direction: column;
       }
+
+      .players-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .room-id {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
@@ -269,6 +431,7 @@
       <h1>Verificando usuario...</h1>
     </div>
 
+    <!-- Pantalla de bienvenida -->
     <div id="mainContent" class="container" style="display: none;">
       <h1 class="welcome-title">Bienvenido, <span id="username"></span></h1>
       
@@ -291,6 +454,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Pantalla de sala -->
+    <div id="roomScreen" class="room-container" style="display: none;">
+      <div class="room-header">
+        <h1 class="room-title">Sala de Juego</h1>
+        <div class="room-id" id="displayRoomId">XXXXXX</div>
+        <p class="room-info">Comparte este ID con tus amigos para que se unan</p>
+      </div>
+
+      <div class="players-section">
+        <h2 class="players-title">Jugadores en la sala (<span id="playerCount">0</span>)</h2>
+        <div class="players-grid" id="playersGrid">
+          <!-- Los jugadores se cargarán aquí dinámicamente -->
+        </div>
+      </div>
+
+      <button class="btn btn-danger leave-room-btn" onclick="salirDeSala()">
+        Salir de la Sala
+      </button>
+    </div>
   </main>
 
   <script type="module">
@@ -304,7 +487,8 @@
       ref,
       set,
       get,
-      update,
+      remove,
+      onValue,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
@@ -323,20 +507,118 @@
     const db = getDatabase(app);
 
     let currentUser = null;
+    let currentRoomId = null;
+    let roomListener = null;
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
         const username = user.displayName || user.email || "Usuario";
         document.getElementById('username').textContent = username;
         
-        // Ocultar loading y mostrar contenido
+        // Verificar si el usuario está en alguna sala
+        await verificarSalaActual();
+        
         document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
       } else {
         window.location.href = "login.html";
       }
     });
+
+    // Verificar si el usuario ya está en una sala
+    async function verificarSalaActual() {
+      try {
+        const salasRef = ref(db, 'salas');
+        const snapshot = await get(salasRef);
+        
+        if (snapshot.exists()) {
+          const salas = snapshot.val();
+          
+          // Buscar si el usuario está en alguna sala
+          for (const [roomId, salaData] of Object.entries(salas)) {
+            if (salaData.users && salaData.users[currentUser.uid]) {
+              // Usuario encontrado en una sala
+              currentRoomId = roomId;
+              mostrarPantallaSala(roomId);
+              return;
+            }
+          }
+        }
+        
+        // No está en ninguna sala, mostrar menú principal
+        document.getElementById('mainContent').style.display = 'block';
+        
+      } catch (error) {
+        console.error('Error al verificar sala actual:', error);
+        document.getElementById('mainContent').style.display = 'block';
+      }
+    }
+
+    // Mostrar pantalla de sala
+    function mostrarPantallaSala(roomId) {
+      currentRoomId = roomId;
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('roomScreen').style.display = 'block';
+      document.getElementById('displayRoomId').textContent = roomId;
+      
+      // Escuchar cambios en la sala en tiempo real
+      escucharCambiosSala(roomId);
+    }
+
+    // Escuchar cambios en la sala
+    function escucharCambiosSala(roomId) {
+      if (roomListener) {
+        roomListener(); // Detener listener anterior
+      }
+
+      const salaRef = ref(db, `salas/${roomId}`);
+      roomListener = onValue(salaRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const salaData = snapshot.val();
+          actualizarListaJugadores(salaData.users, salaData.createdBy);
+        } else {
+          // La sala fue eliminada
+          alert('La sala ha sido cerrada');
+          volverAlMenu();
+        }
+      });
+    }
+
+    // Actualizar lista de jugadores
+    function actualizarListaJugadores(users, createdBy) {
+      const playersGrid = document.getElementById('playersGrid');
+      const playerCount = document.getElementById('playerCount');
+      
+      if (!users) {
+        playersGrid.innerHTML = '<p>No hay jugadores en la sala</p>';
+        playerCount.textContent = '0';
+        return;
+      }
+
+      const usersArray = Object.values(users);
+      playerCount.textContent = usersArray.length;
+      
+      playersGrid.innerHTML = usersArray.map(user => {
+        const isCreator = user.uid === createdBy;
+        const isCurrentUser = user.uid === currentUser.uid;
+        
+        return `
+          <div class="player-card">
+            <img 
+              src="${user.photoURL || 'https://via.placeholder.com/80'}" 
+              alt="${user.displayName}"
+              class="player-avatar"
+              onerror="this.src='https://via.placeholder.com/80'"
+            >
+            <div class="player-name">
+              ${user.displayName}
+              ${isCurrentUser ? ' (Tú)' : ''}
+            </div>
+            ${isCreator ? '<div class="player-badge">👑 Creador</div>' : ''}
+          </div>
+        `;
+      }).join('');
+    }
 
     // Funciones globales
     window.mostrarUnirse = function() {
@@ -360,10 +642,8 @@
       btnCrear.innerHTML = '<span class="spinner"></span>Creando sala...';
 
       try {
-        // Generar ID aleatorio para la sala
         const roomId = Math.random().toString(36).substring(2, 10).toUpperCase();
         
-        // Crear objeto de usuario
         const userData = {
           uid: currentUser.uid,
           displayName: currentUser.displayName || currentUser.email || "Usuario",
@@ -372,7 +652,6 @@
           joinedAt: serverTimestamp()
         };
 
-        // Crear la sala en la base de datos
         const salaRef = ref(db, `salas/${roomId}`);
         await set(salaRef, {
           id: roomId,
@@ -383,11 +662,7 @@
           }
         });
 
-        alert(`✅ Sala creada con éxito!\n\nID: ${roomId}\n\nComparte este ID con otros jugadores para que se unan.`);
-        console.log('Sala creada con ID:', roomId);
-        
-        // Opcional: redirigir a la sala
-        // window.location.href = `sala.html?id=${roomId}`;
+        mostrarPantallaSala(roomId);
         
       } catch (error) {
         console.error('Error al crear sala:', error);
@@ -416,7 +691,6 @@
       btnUnirse.innerHTML = '<span class="spinner"></span>Verificando...';
 
       try {
-        // Verificar si la sala existe
         const salaRef = ref(db, `salas/${roomId}`);
         const snapshot = await get(salaRef);
 
@@ -425,16 +699,12 @@
           return;
         }
 
-        // Verificar si el usuario ya está en la sala
         const salaData = snapshot.val();
         if (salaData.users && salaData.users[currentUser.uid]) {
-          alert('ℹ️ Ya estás en esta sala.');
-          // Opcional: redirigir a la sala de todos modos
-          // window.location.href = `sala.html?id=${roomId}`;
+          mostrarPantallaSala(roomId);
           return;
         }
 
-        // Agregar el usuario a la sala
         const userData = {
           uid: currentUser.uid,
           displayName: currentUser.displayName || currentUser.email || "Usuario",
@@ -446,15 +716,9 @@
         const userRef = ref(db, `salas/${roomId}/users/${currentUser.uid}`);
         await set(userRef, userData);
 
-        alert(`✅ Te has unido exitosamente a la sala: ${roomId}`);
-        console.log('Unido a sala:', roomId);
-        
-        // Opcional: redirigir a la sala
-        // window.location.href = `sala.html?id=${roomId}`;
-        
-        // Limpiar el input
         document.getElementById('roomId').value = '';
         window.ocultarUnirse();
+        mostrarPantallaSala(roomId);
         
       } catch (error) {
         console.error('Error al unirse a la sala:', error);
@@ -463,6 +727,51 @@
         btnUnirse.disabled = false;
         btnUnirse.textContent = 'Unirse';
       }
+    }
+
+    window.salirDeSala = async function() {
+      if (!confirm('¿Estás seguro de que quieres salir de la sala?')) {
+        return;
+      }
+
+      try {
+        if (roomListener) {
+          roomListener();
+          roomListener = null;
+        }
+
+        // Eliminar usuario de la sala
+        const userRef = ref(db, `salas/${currentRoomId}/users/${currentUser.uid}`);
+        await remove(userRef);
+
+        // Verificar si quedan usuarios en la sala
+        const salaRef = ref(db, `salas/${currentRoomId}`);
+        const snapshot = await get(salaRef);
+        
+        if (snapshot.exists()) {
+          const salaData = snapshot.val();
+          if (!salaData.users || Object.keys(salaData.users).length === 0) {
+            // No quedan usuarios, eliminar la sala
+            await remove(salaRef);
+          }
+        }
+
+        volverAlMenu();
+        
+      } catch (error) {
+        console.error('Error al salir de la sala:', error);
+        alert('❌ Error al salir de la sala: ' + error.message);
+      }
+    }
+
+    function volverAlMenu() {
+      currentRoomId = null;
+      if (roomListener) {
+        roomListener();
+        roomListener = null;
+      }
+      document.getElementById('roomScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
     }
 
     // Enter para unirse
