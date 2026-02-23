@@ -145,7 +145,7 @@
     .avatar-section {
       text-align: center;
       margin-bottom: 2.5rem;
-      position: relative; 
+      position: relative;
     }
 
     .avatar-container {
@@ -214,6 +214,105 @@
       border-radius: 12px;
       display: inline-block;
       border: 1px solid var(--border);
+    }
+
+    /* Sección de insignias */
+    .badges-section {
+      background: var(--surface-light);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .badges-section h3 {
+      font-size: 1.4rem;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badges-section h3 i {
+      color: var(--primary);
+    }
+
+    .badges-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      min-height: 50px;
+    }
+
+    .badge-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      animation: badgeAppear 0.5s ease-out;
+    }
+
+    @keyframes badgeAppear {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .badge-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px var(--shadow);
+      border-color: var(--primary);
+    }
+
+    .badge-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      background: var(--surface);
+    }
+
+    .badge-name {
+      font-size: 0.9rem;
+      color: var(--text);
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .badge-count {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .badges-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-secondary);
+      width: 100%;
+      padding: 2rem;
+    }
+
+    .no-badges {
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 2rem;
+      width: 100%;
+      font-style: italic;
     }
 
     /* Sección de formulario */
@@ -503,6 +602,11 @@
         flex-direction: column;
         gap: 1rem;
       }
+      
+      .badge-image {
+        width: 50px;
+        height: 50px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -517,6 +621,23 @@
       .user-name {
         font-size: 1.5rem;
       }
+      
+      .badges-container {
+        gap: 0.5rem;
+      }
+      
+      .badge-item {
+        padding: 0.5rem;
+      }
+      
+      .badge-image {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .badge-name {
+        font-size: 0.8rem;
+      }
     }
 
     /* Animación de carga */
@@ -525,6 +646,15 @@
       width: 20px;
       height: 20px;
       border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(124, 58, 237, 0.3);
       border-radius: 50%;
       border-top-color: var(--primary);
       animation: spin 1s ease-in-out infinite;
@@ -567,6 +697,20 @@
         <span id="userId" class="user-id">ID: Cargando...</span>
       </div>
 
+      <!-- Sección de insignias -->
+      <div class="badges-section">
+        <h3>
+          <i class="fas fa-medal"></i>
+          Insignias
+        </h3>
+        <div id="badgesContainer" class="badges-container">
+          <div class="badges-loading">
+            <div class="loading-spinner"></div>
+            <span>Cargando insignias...</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Formulario de edición -->
       <div class="form-section">
         <h3><i class="fas fa-edit"></i> Editar Información</h3>
@@ -588,6 +732,7 @@
             <i class="fas fa-image"></i>
             URL de Foto de Perfil
           </label>
+          <div style="position: relative;">
             <input type="text" id="photoURL" class="form-input" placeholder="https://ejemplo.com/foto.jpg">
             <span class="input-icon"><i class="fas fa-link"></i></span>
           </div>
@@ -680,10 +825,17 @@
       updateProfile, 
       signOut 
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      get,
+      child
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZoRcoeC3MFMPYJWgl4dmNjq-U51dKD5o",
       authDomain: "databaseloginweb.firebaseapp.com",
+      databaseURL: "https://databaseloginweb-default-rtdb.firebaseio.com/",
       projectId: "databaseloginweb",
       storageBucket: "databaseloginweb.appspot.com",
       messagingSenderId: "121538864529",
@@ -692,6 +844,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const database = getDatabase(app);
     let originalUserData = {};
 
     // Mostrar mensaje de estado
@@ -717,6 +870,60 @@
       });
     }
 
+    // Cargar insignias del usuario
+    async function cargarInsignias(uid) {
+      const badgesContainer = document.getElementById('badgesContainer');
+      
+      try {
+        // Mostrar loading
+        badgesContainer.innerHTML = `
+          <div class="badges-loading">
+            <div class="loading-spinner"></div>
+            <span>Cargando insignias...</span>
+          </div>
+        `;
+
+        // Referencia a la ruta users/{uid}/badges
+        const badgesRef = ref(database, `users/${uid}/badges`);
+        const snapshot = await get(badgesRef);
+
+        if (snapshot.exists()) {
+          const badges = snapshot.val();
+          const badgesArray = [];
+          
+          // Convertir objeto a array
+          for (const [nombre, imagen] of Object.entries(badges)) {
+            badgesArray.push({
+              nombre: nombre,
+              imagen: imagen
+            });
+          }
+
+          if (badgesArray.length > 0) {
+            // Renderizar insignias
+            badgesContainer.innerHTML = badgesArray.map(badge => `
+              <div class="badge-item" title="${badge.nombre}">
+                <img src="${badge.imagen}" alt="${badge.nombre}" class="badge-image" onerror="this.src='https://via.placeholder.com/60?text=?'">
+                <span class="badge-name">${badge.nombre}</span>
+              </div>
+            `).join('');
+          } else {
+            badgesContainer.innerHTML = '<div class="no-badges">No tienes insignias aún</div>';
+          }
+        } else {
+          badgesContainer.innerHTML = '<div class="no-badges">No tienes insignias aún</div>';
+        }
+      } catch (error) {
+        console.error('Error al cargar insignias:', error);
+        badgesContainer.innerHTML = `
+          <div class="no-badges">
+            <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+            Error al cargar insignias
+          </div>
+        `;
+      }
+    }
+
     // Cargar datos del usuario
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -740,6 +947,9 @@
         document.getElementById('lastUpdate').textContent = formatDate(user.metadata.lastSignInTime);
         document.getElementById('memberSince').textContent = formatDate(user.metadata.creationTime);
         document.getElementById('accountStatus').textContent = user.emailVerified ? "Verificada" : "No verificada";
+        
+        // Cargar insignias
+        cargarInsignias(user.uid);
         
       } else {
         window.location.href = "login.html";
@@ -842,4 +1052,3 @@
   </script>
 </body>
 </html>
-
